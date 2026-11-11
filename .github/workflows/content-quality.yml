@@ -1,0 +1,32 @@
+name: Content quality
+
+on:
+  pull_request:
+    paths:
+      - 'blog/**'
+      - 'docs/**'
+      - 'scripts/validate-thoughtful-velocity.mjs'
+      - '.github/workflows/content-quality.yml'
+      - 'docusaurus.config.js'
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  content-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Validate Thoughtful Velocity content
+        run: node scripts/validate-thoughtful-velocity.mjs
+      - name: Build Docusaurus
+        run: npm run build
