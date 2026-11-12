@@ -1,0 +1,30 @@
+name: Content validation
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'docusaurus.config.js'
+      - '.github/workflows/content-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Validate editorial metadata
+        run: node scripts/validate-content.mjs
+      - name: Build site and check internal links
+        run: npm run build
